@@ -1,0 +1,216 @@
+=== Processing int_div.smv ===
+*** This is NuSMV 2.7.1 (compiled on Mon Sep 29 15:48:16 2025)
+*** Enabled addons are: compass
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Please report bugs to <Please report bugs to <nusmv-users@fbk.eu>>
+
+*** Copyright (c) 2010-2025, Fondazione Bruno Kessler
+
+*** This version of NuSMV is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of NuSMV is linked to the MiniSat SAT solver.
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+=== Simulare: 11 tranzitii ===
+********  Simulation Starting From State 1.1   ********
+Trace Description: Simulation Trace
+Trace Type: Simulation
+  -> State: 1.1 <-
+    dividend = 3
+    divisor = 2
+    quotient = 0
+    remainder = 3
+    state = running
+    subtract = TRUE
+  -> State: 1.2 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = running
+    subtract = FALSE
+  -> State: 1.3 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.4 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.5 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.6 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.7 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.8 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.9 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.10 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.11 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+  -> State: 1.12 <-
+    dividend = 3
+    divisor = 2
+    quotient = 1
+    remainder = 1
+    state = halt
+    subtract = FALSE
+
+=== Verificare LTL ===
+-- specification ((((dividend = 3 & divisor = 2) & quotient = 0) & remainder = 3) & state = running)  is true
+-- specification  G (dividend = 3 & divisor = 2)  is true
+-- specification  G dividend = quotient * divisor + remainder  is true
+-- specification  G (0 <= remainder & remainder <= dividend)  is true
+-- specification  G (0 <= quotient & quotient <= dividend)  is true
+-- specification  G (subtract -> (divisor > 0 & remainder >= divisor))  is true
+-- specification  F state = halt  is true
+-- specification (state = running U state = halt)  is true
+-- specification  G (state = halt -> ((divisor > 0 & dividend = quotient * divisor + remainder) & remainder < divisor))  is true
+-- specification  F ((state = halt & quotient = 1) & remainder = 1)  is true
+-- specification  G (state = halt ->  X state = halt)  is true
+-- specification  G (state = error ->  X state = error)  is true
+-- specification  G ((state = running & divisor = 0) ->  X state = error)  is true
+-- specification  G (state = error -> divisor = 0)  is true
+-- specification  G state != error  is true
+-- specification  X ((state = running & quotient = 1) & remainder = 1)  is true
+-- specification  G (((state = running & divisor > 0) & remainder < divisor) ->  X state = halt)  is true
+-- specification  G (subtract ->  X state = running)  is true
+-- specification  G quotient <= 1  is true
+-- specification  G (state = halt -> (quotient = 1 & remainder = 1))  is true
+-- specification  G (state = halt ->  X (((quotient = 1 & remainder = 1) & dividend = 3) & divisor = 2))  is true
+-- specification  F ( G ((state = halt & quotient = 1) & remainder = 1))  is true
+-- specification  F (state = halt | state = error)  is true
+-- specification  G remainder < divisor  is false
+-- as demonstrated by the following execution sequence
+Trace Description: LTL Counterexample
+Trace Type: Counterexample
+  -> State: 2.1 <-
+    dividend = 3
+    divisor = 2
+    quotient = 0
+    remainder = 3
+    state = running
+    subtract = TRUE
+  -> State: 2.2 <-
+    quotient = 1
+    remainder = 1
+    subtract = FALSE
+  -- Loop starts here
+  -> State: 2.3 <-
+    state = halt
+  -> State: 2.4 <-
+-- specification  F (state = halt & remainder = 0)  is false
+-- as demonstrated by the following execution sequence
+Trace Description: LTL Counterexample
+Trace Type: Counterexample
+  -> State: 3.1 <-
+    dividend = 3
+    divisor = 2
+    quotient = 0
+    remainder = 3
+    state = running
+    subtract = TRUE
+  -> State: 3.2 <-
+    quotient = 1
+    remainder = 1
+    subtract = FALSE
+  -- Loop starts here
+  -> State: 3.3 <-
+    state = halt
+  -> State: 3.4 <-
+
+
+=== Verificare CTL ===
+-- specification ((((dividend = 3 & divisor = 2) & quotient = 0) & remainder = 3) & state = running)  is true
+-- specification AG (dividend = 3 & divisor = 2)  is true
+-- specification AG dividend = quotient * divisor + remainder  is true
+-- specification AG (0 <= remainder & remainder <= dividend)  is true
+-- specification AG (0 <= quotient & quotient <= dividend)  is true
+-- specification AG (subtract -> (divisor > 0 & remainder >= divisor))  is true
+-- specification AF state = halt  is true
+-- specification A [ state = running U state = halt ]   is true
+-- specification AG (state = halt -> ((divisor > 0 & dividend = quotient * divisor + remainder) & remainder < divisor))  is true
+-- specification EF ((state = halt & quotient = 1) & remainder = 1)  is true
+-- specification AG (state = halt -> AX state = halt)  is true
+-- specification AG (state = error -> AX state = error)  is true
+-- specification AG ((state = running & divisor = 0) -> AX state = error)  is true
+-- specification AG (state = error -> divisor = 0)  is true
+-- specification AG state != error  is true
+-- specification AX ((state = running & quotient = 1) & remainder = 1)  is true
+-- specification AG (((state = running & divisor > 0) & remainder < divisor) -> AX state = halt)  is true
+-- specification AG (subtract -> AX state = running)  is true
+-- specification AG quotient <= 1  is true
+-- specification AG (state = halt -> (quotient = 1 & remainder = 1))  is true
+-- specification AG (state = halt -> AX (((quotient = 1 & remainder = 1) & dividend = 3) & divisor = 2))  is true
+-- specification AF (AG ((state = halt & quotient = 1) & remainder = 1))  is true
+-- specification AF (state = halt | state = error)  is true
+-- specification AG remainder < divisor  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+  -> State: 4.1 <-
+    dividend = 3
+    divisor = 2
+    quotient = 0
+    remainder = 3
+    state = running
+    subtract = TRUE
+-- specification EF (state = halt & remainder = 0)  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+  -> State: 5.1 <-
+    dividend = 3
+    divisor = 2
+    quotient = 0
+    remainder = 3
+    state = running
+    subtract = TRUE

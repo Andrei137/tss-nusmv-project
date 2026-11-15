@@ -1,0 +1,284 @@
+=== Processing fibo.smv ===
+*** This is NuSMV 2.7.1 (compiled on Mon Sep 29 15:48:16 2025)
+*** Enabled addons are: compass
+*** For more information on NuSMV see <http://nusmv.fbk.eu>
+*** or email to <nusmv-users@list.fbk.eu>.
+*** Please report bugs to <Please report bugs to <nusmv-users@fbk.eu>>
+
+*** Copyright (c) 2010-2025, Fondazione Bruno Kessler
+
+*** This version of NuSMV is linked to the CUDD library version 2.4.1
+*** Copyright (c) 1995-2004, Regents of the University of Colorado
+
+*** This version of NuSMV is linked to the MiniSat SAT solver.
+*** See http://minisat.se/MiniSat.html
+*** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
+*** Copyright (c) 2007-2010, Niklas Sorensson
+
+=== Simulare: 11 tranzitii ===
+********  Simulation Starting From State 1.1   ********
+Trace Description: Simulation Trace
+Trace Type: Simulation
+  -> State: 1.1 <-
+    a = 1
+    b = 1
+    a_old = 0
+    step = 0
+    state = running
+    MaxSteps = 8
+  -> State: 1.2 <-
+    a = 1
+    b = 2
+    a_old = 1
+    step = 1
+    state = running
+    MaxSteps = 8
+  -> State: 1.3 <-
+    a = 2
+    b = 3
+    a_old = 1
+    step = 2
+    state = running
+    MaxSteps = 8
+  -> State: 1.4 <-
+    a = 3
+    b = 5
+    a_old = 2
+    step = 3
+    state = running
+    MaxSteps = 8
+  -> State: 1.5 <-
+    a = 5
+    b = 8
+    a_old = 3
+    step = 4
+    state = running
+    MaxSteps = 8
+  -> State: 1.6 <-
+    a = 8
+    b = 13
+    a_old = 5
+    step = 5
+    state = running
+    MaxSteps = 8
+  -> State: 1.7 <-
+    a = 13
+    b = 21
+    a_old = 8
+    step = 6
+    state = running
+    MaxSteps = 8
+  -> State: 1.8 <-
+    a = 21
+    b = 34
+    a_old = 13
+    step = 7
+    state = running
+    MaxSteps = 8
+  -> State: 1.9 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+    MaxSteps = 8
+  -> State: 1.10 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+    MaxSteps = 8
+  -> State: 1.11 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+    MaxSteps = 8
+  -> State: 1.12 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+    MaxSteps = 8
+
+=== Verificare LTL ===
+-- specification  G (a >= 1 & b >= 1)  is true
+-- specification  G a <= b  is true
+-- specification  G (step > 0 -> a < b)  is true
+-- specification  G ((step mod 2 = 0 -> b * b - a * (a + b) = -1) & (step mod 2 = 1 -> b * b - a * (a + b) = 1))  is true
+-- specification  G (a mod 2 = 0 <-> step mod 3 = 2)  is true
+-- specification  G step <= MaxSteps  is true
+-- specification  G (state = running <-> step < MaxSteps)  is true
+-- specification  G (state = halt <-> step = MaxSteps)  is true
+-- specification  G (step = 2 -> (a = 2 & b = 3))  is true
+-- specification  G (step = 5 -> (a = 8 & b = 13))  is true
+-- specification  G (step = 7 -> ((a = 21 & b = 34) & state = running))  is true
+-- specification  F state = halt  is true
+-- specification (state = running U state = halt)  is true
+-- specification  F ((state = halt & a = 34) & b = 55)  is true
+-- specification  G (state = halt ->  X state = halt)  is true
+-- specification  F ( G ((state = halt & a = 34) & b = 55))  is true
+-- specification  F ((state = halt & a = 55) & b = 89)  is false
+-- as demonstrated by the following execution sequence
+Trace Description: LTL Counterexample
+Trace Type: Counterexample
+  -> State: 2.1 <-
+    a = 1
+    b = 1
+    a_old = 0
+    step = 0
+    state = running
+    MaxSteps = 8
+  -> State: 2.2 <-
+    b = 2
+    a_old = 1
+    step = 1
+  -> State: 2.3 <-
+    a = 2
+    b = 3
+    step = 2
+  -> State: 2.4 <-
+    a = 3
+    b = 5
+    a_old = 2
+    step = 3
+  -> State: 2.5 <-
+    a = 5
+    b = 8
+    a_old = 3
+    step = 4
+  -> State: 2.6 <-
+    a = 8
+    b = 13
+    a_old = 5
+    step = 5
+  -> State: 2.7 <-
+    a = 13
+    b = 21
+    a_old = 8
+    step = 6
+  -> State: 2.8 <-
+    a = 21
+    b = 34
+    a_old = 13
+    step = 7
+  -- Loop starts here
+  -> State: 2.9 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+  -> State: 2.10 <-
+-- specification  G state = running  is false
+-- as demonstrated by the following execution sequence
+Trace Description: LTL Counterexample
+Trace Type: Counterexample
+  -> State: 3.1 <-
+    a = 1
+    b = 1
+    a_old = 0
+    step = 0
+    state = running
+    MaxSteps = 8
+  -> State: 3.2 <-
+    b = 2
+    a_old = 1
+    step = 1
+  -> State: 3.3 <-
+    a = 2
+    b = 3
+    step = 2
+  -> State: 3.4 <-
+    a = 3
+    b = 5
+    a_old = 2
+    step = 3
+  -> State: 3.5 <-
+    a = 5
+    b = 8
+    a_old = 3
+    step = 4
+  -> State: 3.6 <-
+    a = 8
+    b = 13
+    a_old = 5
+    step = 5
+  -> State: 3.7 <-
+    a = 13
+    b = 21
+    a_old = 8
+    step = 6
+  -> State: 3.8 <-
+    a = 21
+    b = 34
+    a_old = 13
+    step = 7
+  -- Loop starts here
+  -> State: 3.9 <-
+    a = 34
+    b = 55
+    a_old = 21
+    step = 8
+    state = halt
+  -- Loop starts here
+  -> State: 3.10 <-
+  -> State: 3.11 <-
+-- specification (((a = 1 & b = 1) & a_old = 0) & step = 0)  is true
+-- specification  G a_old + a = b  is true
+-- specification  G a_old <= a  is true
+-- specification  X ((((step = 1 & a = 1) & b = 2) & a_old = 1) & state = running)  is true
+-- specification  G (step = 7 ->  X ((((state = halt & step = 8) & a = 34) & b = 55) & a_old = 21))  is true
+-- specification  G (state = halt -> ((a = 34 & b = 55) & a_old = 21))  is true
+-- specification  G (state = halt ->  X (((a = 34 & b = 55) & a_old = 21) & step = 8))  is true
+
+
+=== Verificare CTL ===
+-- specification AG (a >= 1 & b >= 1)  is true
+-- specification AG a <= b  is true
+-- specification AG (step > 0 -> a < b)  is true
+-- specification AG ((step mod 2 = 0 -> b * b - a * (a + b) = -1) & (step mod 2 = 1 -> b * b - a * (a + b) = 1))  is true
+-- specification AG (a mod 2 = 0 <-> step mod 3 = 2)  is true
+-- specification AG step <= MaxSteps  is true
+-- specification AG (state = running <-> step < MaxSteps)  is true
+-- specification AG (state = halt <-> step = MaxSteps)  is true
+-- specification AG (step = 2 -> (a = 2 & b = 3))  is true
+-- specification AG (step = 5 -> (a = 8 & b = 13))  is true
+-- specification AG (step = 7 -> ((a = 21 & b = 34) & state = running))  is true
+-- specification AF state = halt  is true
+-- specification A [ state = running U state = halt ]   is true
+-- specification EF ((state = halt & a = 34) & b = 55)  is true
+-- specification AG (state = halt -> AX state = halt)  is true
+-- specification AF (AG ((state = halt & a = 34) & b = 55))  is true
+-- specification EF ((state = halt & a = 55) & b = 89)  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+  -> State: 4.1 <-
+    a = 1
+    b = 1
+    a_old = 0
+    step = 0
+    state = running
+    MaxSteps = 8
+-- specification EG state = running  is false
+-- as demonstrated by the following execution sequence
+Trace Description: CTL Counterexample
+Trace Type: Counterexample
+  -> State: 5.1 <-
+    a = 1
+    b = 1
+    a_old = 0
+    step = 0
+    state = running
+    MaxSteps = 8
+-- specification (((a = 1 & b = 1) & a_old = 0) & step = 0)  is true
+-- specification AG a_old + a = b  is true
+-- specification AG a_old <= a  is true
+-- specification AX ((((step = 1 & a = 1) & b = 2) & a_old = 1) & state = running)  is true
+-- specification AG (step = 7 -> AX ((((state = halt & step = 8) & a = 34) & b = 55) & a_old = 21))  is true
+-- specification AG (state = halt -> ((a = 34 & b = 55) & a_old = 21))  is true
+-- specification AG (state = halt -> AX (((a = 34 & b = 55) & a_old = 21) & step = 8))  is true

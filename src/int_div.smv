@@ -1,0 +1,182 @@
+-- Impartire intreaga prin scaderi repetate, pentru numere din 0..3.
+-- Intrarile se pastreaza; quotient este catul, remainder este restul de lucru.
+-- Impartitorul zero conduce la error, fara efectuarea unei scaderi.
+MODULE main
+VAR
+  dividend : 0..3;
+  divisor : 0..3;
+  quotient : 0..3;
+  remainder : 0..3;
+  state : {running, halt, error};
+DEFINE
+  subtract := state = running & divisor > 0 & remainder >= divisor;
+ASSIGN
+  init(dividend) := 3;
+  init(divisor) := 2;
+  init(quotient) := 0;
+  init(remainder) := dividend;
+  init(state) := running;
+
+  next(dividend) := dividend;
+  next(divisor) := divisor;
+  next(remainder) := case subtract : remainder - divisor; TRUE : remainder; esac;
+  next(state) := case
+    state = running & divisor = 0 : error;
+    state = running & remainder < divisor : halt;
+    TRUE : state;
+  esac;
+
+-- Egalitatea TRANS exclude succesorii in afara domeniului finit al catului.
+TRANS next(quotient) = case subtract : quotient + 1; TRUE : quotient; esac
+
+-- 25 de proprietati LTL; sufixul _false marcheaza contraexemple intentionate.
+-- Initial, intrarea este 3/2, catul 0 si restul de lucru 3.
+LTLSPEC NAME int_div_ltl_initial_values := dividend = 3 & divisor = 2 & quotient = 0 & remainder = 3 & state = running
+
+-- Intrarile raman 3 si 2 pe toata executia salvata.
+LTLSPEC NAME int_div_ltl_input_memory := G (dividend = 3 & divisor = 2)
+
+-- Identitatea impartirii se pastreaza in fiecare stare, inclusiv in calcul.
+LTLSPEC NAME int_div_ltl_division_invariant := G (dividend = quotient * divisor + remainder)
+
+-- Restul de lucru ramane intre zero si deimpartit.
+LTLSPEC NAME int_div_ltl_remainder_bound := G (0 <= remainder & remainder <= dividend)
+
+-- Catul ramane intre zero si deimpartit.
+LTLSPEC NAME int_div_ltl_quotient_bound := G (0 <= quotient & quotient <= dividend)
+
+-- Scaderea este permisa numai cu impartitor pozitiv si rest suficient.
+LTLSPEC NAME int_div_ltl_subtract_guard := G (subtract -> divisor > 0 & remainder >= divisor)
+
+-- Pentru intrarea 3/2, toate executiile ajung la halt.
+LTLSPEC NAME int_div_ltl_terminates := F (state = halt)
+
+-- Pentru 3/2, calculul ramane in running pana la halt.
+LTLSPEC NAME int_div_ltl_until_halt := (state = running) U (state = halt)
+
+-- La oprire, catul si restul satisfac definitia impartirii intregi.
+LTLSPEC NAME int_div_ltl_correct_at_halt := G (state = halt -> divisor > 0 & dividend = quotient * divisor + remainder & remainder < divisor)
+
+-- Catul 1 si restul 1 sunt atinse pe fiecare executie (LTL) / pe o cale (CTL).
+LTLSPEC NAME int_div_ltl_reachable_result := F (state = halt & quotient = 1 & remainder = 1)
+
+-- Odata ajuns la halt, calculul ramane oprit.
+LTLSPEC NAME int_div_ltl_halt_absorbing := G (state = halt -> X (state = halt))
+
+-- O stare de eroare este absorbanta; cazul zero este testat si separat.
+LTLSPEC NAME int_div_ltl_error_absorbing := G (state = error -> X (state = error))
+
+-- Impartitorul zero produce error la pasul urmator; testat si separat.
+LTLSPEC NAME int_div_ltl_zero_divisor := G ((state = running & divisor = 0) -> X (state = error))
+
+-- Eroarea poate aparea numai pentru impartitor zero.
+LTLSPEC NAME int_div_ltl_error_only_for_zero := G (state = error -> divisor = 0)
+
+-- Intrarea salvata 3/2 nu produce eroare.
+LTLSPEC NAME int_div_ltl_no_error := G (state != error)
+
+-- Prima tranzitie scade 2 din 3 si incrementeaza catul.
+LTLSPEC NAME int_div_ltl_first_subtraction := X (state = running & quotient = 1 & remainder = 1)
+
+-- Cand restul este sub impartitorul pozitiv, urmatorul pas detecteaza halt.
+LTLSPEC NAME int_div_ltl_detect_halt := G ((state = running & divisor > 0 & remainder < divisor) -> X (state = halt))
+
+-- O scadere pastreaza starea running; oprirea este detectata separat.
+LTLSPEC NAME int_div_ltl_subtraction_continues := G (subtract -> X (state = running))
+
+-- Pentru 3/2, catul partial este cel mult 1.
+LTLSPEC NAME int_div_ltl_one_subtraction := G (quotient <= 1)
+
+-- Pentru 3/2, orice stare halt are catul 1 si restul 1.
+LTLSPEC NAME int_div_ltl_final_values := G (state = halt -> quotient = 1 & remainder = 1)
+
+-- Dupa halt, catul si restul raman la valorile finale pentru 3/2.
+LTLSPEC NAME int_div_ltl_stable_configuration := G (state = halt -> X (quotient = 1 & remainder = 1 & dividend = 3 & divisor = 2))
+
+-- Executia ajunge la un rezultat corect care ramane permanent stabil.
+LTLSPEC NAME int_div_ltl_stable_suffix := F (G (state = halt & quotient = 1 & remainder = 1))
+
+-- Pentru orice intrare admisa, calculul ajunge la halt sau error.
+LTLSPEC NAME int_div_ltl_terminal_reachable := F (state = halt | state = error)
+
+-- FALSE: restul initial de lucru este 3, mai mare decat impartitorul 2.
+LTLSPEC NAME int_div_ltl_remainder_always_small_false := G (remainder < divisor)
+
+-- FALSE: 3/2 se termina cu restul 1, nu 0.
+LTLSPEC NAME int_div_ltl_zero_remainder_false := F (state = halt & remainder = 0)
+
+-- 25 de proprietati CTL; sufixul _false marcheaza contraexemple intentionate.
+-- Initial, intrarea este 3/2, catul 0 si restul de lucru 3.
+CTLSPEC NAME int_div_ctl_initial_values := dividend = 3 & divisor = 2 & quotient = 0 & remainder = 3 & state = running
+
+-- Intrarile raman 3 si 2 pe toata executia salvata.
+CTLSPEC NAME int_div_ctl_input_memory := AG (dividend = 3 & divisor = 2)
+
+-- Identitatea impartirii se pastreaza in fiecare stare, inclusiv in calcul.
+CTLSPEC NAME int_div_ctl_division_invariant := AG (dividend = quotient * divisor + remainder)
+
+-- Restul de lucru ramane intre zero si deimpartit.
+CTLSPEC NAME int_div_ctl_remainder_bound := AG (0 <= remainder & remainder <= dividend)
+
+-- Catul ramane intre zero si deimpartit.
+CTLSPEC NAME int_div_ctl_quotient_bound := AG (0 <= quotient & quotient <= dividend)
+
+-- Scaderea este permisa numai cu impartitor pozitiv si rest suficient.
+CTLSPEC NAME int_div_ctl_subtract_guard := AG (subtract -> divisor > 0 & remainder >= divisor)
+
+-- Pentru intrarea 3/2, toate executiile ajung la halt.
+CTLSPEC NAME int_div_ctl_terminates := AF (state = halt)
+
+-- Pentru 3/2, calculul ramane in running pana la halt.
+CTLSPEC NAME int_div_ctl_until_halt := A [(state = running) U (state = halt)]
+
+-- La oprire, catul si restul satisfac definitia impartirii intregi.
+CTLSPEC NAME int_div_ctl_correct_at_halt := AG (state = halt -> divisor > 0 & dividend = quotient * divisor + remainder & remainder < divisor)
+
+-- Catul 1 si restul 1 sunt atinse pe fiecare executie (LTL) / pe o cale (CTL).
+CTLSPEC NAME int_div_ctl_reachable_result := EF (state = halt & quotient = 1 & remainder = 1)
+
+-- Odata ajuns la halt, calculul ramane oprit.
+CTLSPEC NAME int_div_ctl_halt_absorbing := AG (state = halt -> AX (state = halt))
+
+-- O stare de eroare este absorbanta; cazul zero este testat si separat.
+CTLSPEC NAME int_div_ctl_error_absorbing := AG (state = error -> AX (state = error))
+
+-- Impartitorul zero produce error la pasul urmator; testat si separat.
+CTLSPEC NAME int_div_ctl_zero_divisor := AG ((state = running & divisor = 0) -> AX (state = error))
+
+-- Eroarea poate aparea numai pentru impartitor zero.
+CTLSPEC NAME int_div_ctl_error_only_for_zero := AG (state = error -> divisor = 0)
+
+-- Intrarea salvata 3/2 nu produce eroare.
+CTLSPEC NAME int_div_ctl_no_error := AG (state != error)
+
+-- Prima tranzitie scade 2 din 3 si incrementeaza catul.
+CTLSPEC NAME int_div_ctl_first_subtraction := AX (state = running & quotient = 1 & remainder = 1)
+
+-- Cand restul este sub impartitorul pozitiv, urmatorul pas detecteaza halt.
+CTLSPEC NAME int_div_ctl_detect_halt := AG ((state = running & divisor > 0 & remainder < divisor) -> AX (state = halt))
+
+-- O scadere pastreaza starea running; oprirea este detectata separat.
+CTLSPEC NAME int_div_ctl_subtraction_continues := AG (subtract -> AX (state = running))
+
+-- Pentru 3/2, catul partial este cel mult 1.
+CTLSPEC NAME int_div_ctl_one_subtraction := AG (quotient <= 1)
+
+-- Pentru 3/2, orice stare halt are catul 1 si restul 1.
+CTLSPEC NAME int_div_ctl_final_values := AG (state = halt -> quotient = 1 & remainder = 1)
+
+-- Dupa halt, catul si restul raman la valorile finale pentru 3/2.
+CTLSPEC NAME int_div_ctl_stable_configuration := AG (state = halt -> AX (quotient = 1 & remainder = 1 & dividend = 3 & divisor = 2))
+
+-- Executia ajunge la un rezultat corect care ramane permanent stabil.
+CTLSPEC NAME int_div_ctl_stable_suffix := AF (AG (state = halt & quotient = 1 & remainder = 1))
+
+-- Pentru orice intrare admisa, calculul ajunge la halt sau error.
+CTLSPEC NAME int_div_ctl_terminal_reachable := AF (state = halt | state = error)
+
+-- FALSE: restul initial de lucru este 3, mai mare decat impartitorul 2.
+CTLSPEC NAME int_div_ctl_remainder_always_small_false := AG (remainder < divisor)
+
+-- FALSE: 3/2 se termina cu restul 1, nu 0.
+CTLSPEC NAME int_div_ctl_zero_remainder_false := EF (state = halt & remainder = 0)

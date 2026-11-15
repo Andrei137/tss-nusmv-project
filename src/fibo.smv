@@ -1,0 +1,181 @@
+-- Fibonacci iterativ: (a,b) := (b,a+b), pornind de la (1,1).
+-- Se executa exact 8 actualizari; halt pastreaza toate valorile finale.
+MODULE main
+VAR
+  a : 0..300;
+  b : 0..300;
+  a_old : 0..300;
+  step : 0..8;
+  state : {running, halt};
+DEFINE
+  MaxSteps := 8;
+ASSIGN
+  init(a) := 1;
+  init(b) := 1;
+  init(a_old) := 0;
+  init(step) := 0;
+  init(state) := running;
+
+  -- Actualizarile folosesc simultan valorile din starea curenta.
+  next(a) := case state = running : b; TRUE : a; esac;
+  next(a_old) := case state = running : a; TRUE : a_old; esac;
+  next(state) := case
+    state = running & step = MaxSteps - 1 : halt;
+    TRUE : state;
+  esac;
+
+-- Egalitatile TRANS exclud succesorii in afara domeniilor finite.
+TRANS next(b) = case state = running : a + b; TRUE : b; esac
+TRANS next(step) = case state = running : step + 1; TRUE : step; esac
+
+-- 25 de proprietati LTL; sufixul _false marcheaza contraexemple intentionate.
+-- Initial, perechea este (1,1), memoria 0 si contorul 0.
+LTLSPEC NAME fibo_ltl_initial_pair := a = 1 & b = 1 & a_old = 0 & step = 0
+
+-- Termenii sunt mereu strict pozitivi.
+LTLSPEC NAME fibo_ltl_positive_terms := G (a >= 1 & b >= 1)
+
+-- Primul termen nu il depaseste pe al doilea.
+LTLSPEC NAME fibo_ltl_ordered_terms := G (a <= b)
+
+-- Dupa prima actualizare, termenii sunt strict ordonati.
+LTLSPEC NAME fibo_ltl_strict_order := G (step > 0 -> a < b)
+
+-- Memoria si termenii respecta recurenta inclusiv dupa oprire.
+LTLSPEC NAME fibo_ltl_recurrence := G (a_old + a = b)
+
+-- Termenul a nu scade fata de valoarea precedenta.
+LTLSPEC NAME fibo_ltl_monotone_a := G (a_old <= a)
+
+-- Identitatea Cassini alterneaza dupa paritatea pasului.
+LTLSPEC NAME fibo_ltl_cassini := G ((step mod 2 = 0 -> b*b - a*(a+b) = -1) & (step mod 2 = 1 -> b*b - a*(a+b) = 1))
+
+-- Termenul a este par exact la pasii congruenti cu 2 modulo 3.
+LTLSPEC NAME fibo_ltl_parity_cycle := G ((a mod 2 = 0) <-> (step mod 3 = 2))
+
+-- Contorul nu depaseste numarul cerut de actualizari.
+LTLSPEC NAME fibo_ltl_bounded_steps := G (step <= MaxSteps)
+
+-- Calculul este in curs exact inainte de pasul final.
+LTLSPEC NAME fibo_ltl_running_before_end := G ((state = running) <-> (step < MaxSteps))
+
+-- Oprirea coincide cu efectuarea celor 8 actualizari.
+LTLSPEC NAME fibo_ltl_halt_at_limit := G ((state = halt) <-> (step = MaxSteps))
+
+-- Prima tranzitie produce perechea (1,2) si memoreaza 1.
+LTLSPEC NAME fibo_ltl_first_update := X (step = 1 & a = 1 & b = 2 & a_old = 1 & state = running)
+
+-- La pasul 2 perechea este (2,3).
+LTLSPEC NAME fibo_ltl_second_update := G (step = 2 -> a = 2 & b = 3)
+
+-- La pasul 5 perechea este (8,13).
+LTLSPEC NAME fibo_ltl_middle_pair := G (step = 5 -> a = 8 & b = 13)
+
+-- La pasul 7 perechea este (21,34), inca in calcul.
+LTLSPEC NAME fibo_ltl_penultimate_pair := G (step = 7 -> a = 21 & b = 34 & state = running)
+
+-- Ultima actualizare produce (34,55) si opreste calculul.
+LTLSPEC NAME fibo_ltl_last_update := G (step = 7 -> X (state = halt & step = 8 & a = 34 & b = 55 & a_old = 21))
+
+-- Toate executiile ajung la halt.
+LTLSPEC NAME fibo_ltl_terminates := F (state = halt)
+
+-- Calculul ramane in running pana la oprirea garantata.
+LTLSPEC NAME fibo_ltl_until_halt := (state = running) U (state = halt)
+
+-- La oprire, rezultatul si memoria au valorile asteptate.
+LTLSPEC NAME fibo_ltl_final_values := G (state = halt -> a = 34 & b = 55 & a_old = 21)
+
+-- Rezultatul final este atins pe fiecare executie (LTL) / pe o cale (CTL).
+LTLSPEC NAME fibo_ltl_reachable_result := F (state = halt & a = 34 & b = 55)
+
+-- Odata oprit, calculul ramane oprit.
+LTLSPEC NAME fibo_ltl_halt_absorbing := G (state = halt -> X (state = halt))
+
+-- Dupa halt, perechea, memoria si contorul raman la valorile finale.
+LTLSPEC NAME fibo_ltl_stable_configuration := G (state = halt -> X (a = 34 & b = 55 & a_old = 21 & step = 8))
+
+-- Se ajunge la un sufix permanent oprit, cu rezultatul corect.
+LTLSPEC NAME fibo_ltl_stable_suffix := F (G (state = halt & a = 34 & b = 55))
+
+-- FALSE: perechea (55,89) ar necesita 9 actualizari, nu 8.
+LTLSPEC NAME fibo_ltl_wrong_result_false := F (state = halt & a = 55 & b = 89)
+
+-- FALSE: calculul se opreste, deci nu ramane permanent running.
+LTLSPEC NAME fibo_ltl_always_running_false := G (state = running)
+
+-- 25 de proprietati CTL; sufixul _false marcheaza contraexemple intentionate.
+-- Initial, perechea este (1,1), memoria 0 si contorul 0.
+CTLSPEC NAME fibo_ctl_initial_pair := a = 1 & b = 1 & a_old = 0 & step = 0
+
+-- Termenii sunt mereu strict pozitivi.
+CTLSPEC NAME fibo_ctl_positive_terms := AG (a >= 1 & b >= 1)
+
+-- Primul termen nu il depaseste pe al doilea.
+CTLSPEC NAME fibo_ctl_ordered_terms := AG (a <= b)
+
+-- Dupa prima actualizare, termenii sunt strict ordonati.
+CTLSPEC NAME fibo_ctl_strict_order := AG (step > 0 -> a < b)
+
+-- Memoria si termenii respecta recurenta inclusiv dupa oprire.
+CTLSPEC NAME fibo_ctl_recurrence := AG (a_old + a = b)
+
+-- Termenul a nu scade fata de valoarea precedenta.
+CTLSPEC NAME fibo_ctl_monotone_a := AG (a_old <= a)
+
+-- Identitatea Cassini alterneaza dupa paritatea pasului.
+CTLSPEC NAME fibo_ctl_cassini := AG ((step mod 2 = 0 -> b*b - a*(a+b) = -1) & (step mod 2 = 1 -> b*b - a*(a+b) = 1))
+
+-- Termenul a este par exact la pasii congruenti cu 2 modulo 3.
+CTLSPEC NAME fibo_ctl_parity_cycle := AG ((a mod 2 = 0) <-> (step mod 3 = 2))
+
+-- Contorul nu depaseste numarul cerut de actualizari.
+CTLSPEC NAME fibo_ctl_bounded_steps := AG (step <= MaxSteps)
+
+-- Calculul este in curs exact inainte de pasul final.
+CTLSPEC NAME fibo_ctl_running_before_end := AG ((state = running) <-> (step < MaxSteps))
+
+-- Oprirea coincide cu efectuarea celor 8 actualizari.
+CTLSPEC NAME fibo_ctl_halt_at_limit := AG ((state = halt) <-> (step = MaxSteps))
+
+-- Prima tranzitie produce perechea (1,2) si memoreaza 1.
+CTLSPEC NAME fibo_ctl_first_update := AX (step = 1 & a = 1 & b = 2 & a_old = 1 & state = running)
+
+-- La pasul 2 perechea este (2,3).
+CTLSPEC NAME fibo_ctl_second_update := AG (step = 2 -> a = 2 & b = 3)
+
+-- La pasul 5 perechea este (8,13).
+CTLSPEC NAME fibo_ctl_middle_pair := AG (step = 5 -> a = 8 & b = 13)
+
+-- La pasul 7 perechea este (21,34), inca in calcul.
+CTLSPEC NAME fibo_ctl_penultimate_pair := AG (step = 7 -> a = 21 & b = 34 & state = running)
+
+-- Ultima actualizare produce (34,55) si opreste calculul.
+CTLSPEC NAME fibo_ctl_last_update := AG (step = 7 -> AX (state = halt & step = 8 & a = 34 & b = 55 & a_old = 21))
+
+-- Toate executiile ajung la halt.
+CTLSPEC NAME fibo_ctl_terminates := AF (state = halt)
+
+-- Calculul ramane in running pana la oprirea garantata.
+CTLSPEC NAME fibo_ctl_until_halt := A [(state = running) U (state = halt)]
+
+-- La oprire, rezultatul si memoria au valorile asteptate.
+CTLSPEC NAME fibo_ctl_final_values := AG (state = halt -> a = 34 & b = 55 & a_old = 21)
+
+-- Rezultatul final este atins pe fiecare executie (LTL) / pe o cale (CTL).
+CTLSPEC NAME fibo_ctl_reachable_result := EF (state = halt & a = 34 & b = 55)
+
+-- Odata oprit, calculul ramane oprit.
+CTLSPEC NAME fibo_ctl_halt_absorbing := AG (state = halt -> AX (state = halt))
+
+-- Dupa halt, perechea, memoria si contorul raman la valorile finale.
+CTLSPEC NAME fibo_ctl_stable_configuration := AG (state = halt -> AX (a = 34 & b = 55 & a_old = 21 & step = 8))
+
+-- Se ajunge la un sufix permanent oprit, cu rezultatul corect.
+CTLSPEC NAME fibo_ctl_stable_suffix := AF (AG (state = halt & a = 34 & b = 55))
+
+-- FALSE: perechea (55,89) ar necesita 9 actualizari, nu 8.
+CTLSPEC NAME fibo_ctl_wrong_result_false := EF (state = halt & a = 55 & b = 89)
+
+-- FALSE: calculul se opreste, deci nu ramane permanent running.
+CTLSPEC NAME fibo_ctl_always_running_false := EG (state = running)
