@@ -1,24 +1,24 @@
 === Processing int_div.smv ===
-*** This is NuSMV 2.7.1 (compiled on Mon Sep 29 15:48:16 2025)
+*** This is NuSMV 2.7.0 (compiled on Fri Oct 25 17:21:01 2024)
 *** Enabled addons are: compass
 *** For more information on NuSMV see <http://nusmv.fbk.eu>
 *** or email to <nusmv-users@list.fbk.eu>.
 *** Please report bugs to <Please report bugs to <nusmv-users@fbk.eu>>
 
-*** Copyright (c) 2010-2025, Fondazione Bruno Kessler
+*** Copyright (c) 2010-2024, Fondazione Bruno Kessler
 
 *** This version of NuSMV is linked to the CUDD library version 2.4.1
 *** Copyright (c) 1995-2004, Regents of the University of Colorado
 
-*** This version of NuSMV is linked to the MiniSat SAT solver.
+*** This version of NuSMV is linked to the MiniSat SAT solver. 
 *** See http://minisat.se/MiniSat.html
 *** Copyright (c) 2003-2006, Niklas Een, Niklas Sorensson
 *** Copyright (c) 2007-2010, Niklas Sorensson
 
-=== Simulare: 11 tranzitii ===
+=== Simulare: 11 tranzitii === 
 ********  Simulation Starting From State 1.1   ********
-Trace Description: Simulation Trace
-Trace Type: Simulation
+Trace Description: Simulation Trace 
+Trace Type: Simulation 
   -> State: 1.1 <-
     dividend = 3
     divisor = 2
@@ -104,7 +104,7 @@ Trace Type: Simulation
     state = halt
     subtract = FALSE
 
-=== Verificare LTL ===
+=== Verificare LTL === 
 -- specification ((((dividend = 3 & divisor = 2) & quotient = 0) & remainder = 3) & state = running)  is true
 -- specification  G (dividend = 3 & divisor = 2)  is true
 -- specification  G dividend = quotient * divisor + remainder  is true
@@ -130,8 +130,8 @@ Trace Type: Simulation
 -- specification  F (state = halt | state = error)  is true
 -- specification  G remainder < divisor  is false
 -- as demonstrated by the following execution sequence
-Trace Description: LTL Counterexample
-Trace Type: Counterexample
+Trace Description: LTL Counterexample 
+Trace Type: Counterexample 
   -> State: 2.1 <-
     dividend = 3
     divisor = 2
@@ -149,8 +149,8 @@ Trace Type: Counterexample
   -> State: 2.4 <-
 -- specification  F (state = halt & remainder = 0)  is false
 -- as demonstrated by the following execution sequence
-Trace Description: LTL Counterexample
-Trace Type: Counterexample
+Trace Description: LTL Counterexample 
+Trace Type: Counterexample 
   -> State: 3.1 <-
     dividend = 3
     divisor = 2
@@ -168,7 +168,7 @@ Trace Type: Counterexample
   -> State: 3.4 <-
 
 
-=== Verificare CTL ===
+=== Verificare CTL === 
 -- specification ((((dividend = 3 & divisor = 2) & quotient = 0) & remainder = 3) & state = running)  is true
 -- specification AG (dividend = 3 & divisor = 2)  is true
 -- specification AG dividend = quotient * divisor + remainder  is true
@@ -194,8 +194,8 @@ Trace Type: Counterexample
 -- specification AF (state = halt | state = error)  is true
 -- specification AG remainder < divisor  is false
 -- as demonstrated by the following execution sequence
-Trace Description: CTL Counterexample
-Trace Type: Counterexample
+Trace Description: CTL Counterexample 
+Trace Type: Counterexample 
   -> State: 4.1 <-
     dividend = 3
     divisor = 2
@@ -205,8 +205,8 @@ Trace Type: Counterexample
     subtract = TRUE
 -- specification EF (state = halt & remainder = 0)  is false
 -- as demonstrated by the following execution sequence
-Trace Description: CTL Counterexample
-Trace Type: Counterexample
+Trace Description: CTL Counterexample 
+Trace Type: Counterexample 
   -> State: 5.1 <-
     dividend = 3
     divisor = 2

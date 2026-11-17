@@ -1,0 +1,19 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.21.0/.schema/devbox.schema.json",
+  "packages": [
+    "nusmv@latest"
+  ],
+  "shell": {
+    "scripts": {
+      "int_div": [
+        "cd scripts && ./run.sh int_div.smv && cd .."
+      ],
+      "fibo": [
+        "cd scripts && ./run.sh fibo.smv && cd .."
+      ],
+      "all": [
+        "cd scripts && ./run.sh -al && cd .."
+      ]
+    }
+  }
+}

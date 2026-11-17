@@ -1,0 +1,37 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2026-11-12T14:50:34Z",
+      "resolved": "github:NixOS/nixpkgs/2074cc672349f14240fb7ea90d509e0b643e9dd4?lastModified=1794495034&narHash=sha256-E0hYoioqUtM2XmPPvYYpJgdADF5AW9oOoPSEiM9dTHQ%3D"
+    },
+    "nusmv@latest": {
+      "last_modified": "2026-11-07T08:52:32Z",
+      "resolved": "github:NixOS/nixpkgs/085af13c1607f4f73ab1e7a51071faf6577a7e87#nusmv",
+      "source": "devbox-search",
+      "version": "2.7.0",
+      "systems": {
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/piysm1wi18rn76rl6rdcxr9wmrkhyzs6-NuSMV-2.7.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/piysm1wi18rn76rl6rdcxr9wmrkhyzs6-NuSMV-2.7.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/vw6ncr0lfpiqc1g0z9zcgmxlc3q4iypk-NuSMV-2.7.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/vw6ncr0lfpiqc1g0z9zcgmxlc3q4iypk-NuSMV-2.7.0"
+        }
+      }
+    }
+  }
+}
